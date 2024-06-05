@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Projet BUT3 Symfony{% endblock %}
+
+{% block body %}
+<div>
+    <h1>Evenements : </h1>
+    
+    <ul>
+        {% for event in events %}
+            <li>{{ event }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
