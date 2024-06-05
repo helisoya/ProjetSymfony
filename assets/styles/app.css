@@ -1,3 +1,7 @@
+@import './bootstrap.min.css';
+@import './bootstrap-icons.css';
+@import './templatemo-festava-live.css';
+
 body {
-    background-color: skyblue;
+    background-color: lightgray;
 }
