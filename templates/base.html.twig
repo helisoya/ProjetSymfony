@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
@@ -16,7 +16,7 @@
 
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="{{ path('app_main') }}">
                 Pierre Events
             </a>
 
@@ -24,9 +24,9 @@
                 <ul class="navbar-nav align-items-lg-center ms-auto me-lg-5">
                     <li class="nav-item">
                         {%if app.user%}
-                            <a class="nav-link click-scroll" href="/profile">Profile</a>
+                            <a class="nav-link click-scroll" href="{{ path('app_profile') }}">Profile</a>
                         {% else %}
-                            <a class="nav-link click-scroll" href="/login">Connection</a>
+                            <a class="nav-link click-scroll" href="{{ path('app_login') }}">Connection</a>
                         {% endif %}
                     </li>
                 </ul>

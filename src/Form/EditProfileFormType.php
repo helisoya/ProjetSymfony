@@ -27,34 +27,18 @@ class EditProfileFormType extends AbstractType
             ])]])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
+                'required' => false,
+                'mapped' => false,
                 'invalid_message' => 'Les mots de passes doivent être identiques.',
                 'options' => [
                     'attr' => ['class' => 'password-field'],
-                    'constraints' => [
-                        new NotBlank([
-                            'message' => 'Entrez un mot de passe',
-                        ]),
-                        new Length([
-                            'min' => 8,
-                            'minMessage' => 'Votre mot de passe doit avoir au moins {{ limit }} caractères',
-                            // max length allowed by Symfony for security reasons
-                            'max' => 4096,
-                        ]),
-                        new Regex([
-                            'pattern' => '/\d+/i',
-                            'message'=> 'Vous devez utiliser au moins un nombre'
-                        ]),
-                    ],
                 ],
-                'required' => false,
                 'first_options'  => ['label' => 'Mot de passe'],
                 'second_options' => ['label' => 'Répeter mot de passe'],
-
             ])
             ->add('nom', TextType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
-                'mapped' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Entrez votre nom',
@@ -64,7 +48,6 @@ class EditProfileFormType extends AbstractType
             ->add('prenom', TextType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
-                'mapped' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Entrez votre prenom',

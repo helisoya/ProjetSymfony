@@ -5,9 +5,9 @@
 {% block body %}
     <h1>Edition du profil</h1>
 
-    {{ form_errors(editForm) }}
 
     {{ form_start(editForm) }}
+        {{ form_errors(editForm) }}
         {{ form_row(editForm.email) }}
         {{ form_row(editForm.nom) }}
         {{ form_row(editForm.prenom) }}
