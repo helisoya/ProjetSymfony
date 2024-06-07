@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edition du profil{% endblock %}
+
+{% block body %}
+    <h1>Edition du profil</h1>
+
+    {{ form_errors(editForm) }}
+
+    {{ form_start(editForm) }}
+        {{ form_row(editForm.email) }}
+        {{ form_row(editForm.nom) }}
+        {{ form_row(editForm.prenom) }}
+        {{ form_row(editForm.password) }}
+
+        <button type="submit" class="btn">Valider</button>
+    {{ form_end(editForm) }}
+{% endblock %}
