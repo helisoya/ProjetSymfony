@@ -13,6 +13,27 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                Pierre Events
+            </a>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav align-items-lg-center ms-auto me-lg-5">
+                    <li class="nav-item">
+                        {%if app.user%}
+                            <a class="nav-link click-scroll" href="/profile">Profile</a>
+                        {% else %}
+                            <a class="nav-link click-scroll" href="/login">Connection</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <body>
         {% block body %}{% endblock %}
     </body>

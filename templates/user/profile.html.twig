@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+    <h3>Profil : </h3>
+    <p> Nom : {{ user.nom }}</p>
+    <p>Prenom : {{ user.prenom }}</p>
+    <p>Email : {{ user.email }}</p>
+    <a href="/profile/edit">Edition</a>
+    <a href="/logout">Déconnection</a>
+{% endblock %}
