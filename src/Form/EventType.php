@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class EventType extends AbstractType
 {
@@ -18,19 +19,12 @@ class EventType extends AbstractType
             ->add('description')
             ->add('startDate', null, [
                 'widget' => 'single_text',
+                'constraints'=>[
+                    new GreaterThan('today')
+                ]
             ])
             ->add('maxParticipants')
             ->add('isPublic')
-            ->add('participants', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-                'multiple' => true,
-                'required' => false,
-            ])
-            ->add('creator', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 
