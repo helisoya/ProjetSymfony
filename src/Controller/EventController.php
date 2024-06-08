@@ -15,28 +15,38 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/event')]
 class EventController extends AbstractController
 {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly AuthorizationCheckerInterface $authorizationChecker
+    )
+    {
+    }
+
     #[Route('/', name: 'app_event_index', methods: ['GET'])]
-    public function index(EventRepository $eventRepository): Response
+    public function index(): Response
     {
         return $this->render('event/index.html.twig', [
-            'events' => $eventRepository->findAll(),
+            'events' => $this->entityManager->getRepository(Event::class)->findAll(),
         ]);
     }
 
+    #[isGranted('ROLE_USER')]
     #[Route('/new', name: 'app_event_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
         $event = new Event();
         $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($event);
-            $entityManager->flush();
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('app_event_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -127,13 +137,17 @@ class EventController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_event_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Event $event, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Event $event): Response
     {
+        if (!$this->authorizationChecker->isGranted('EVENT_EDIT', $event)) {
+            throw $this->createAccessDeniedException();
+        }
+
         $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('app_event_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -145,11 +159,15 @@ class EventController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_event_delete', methods: ['POST'])]
-    public function delete(Request $request, Event $event, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Event $event): Response
     {
+        if (!$this->authorizationChecker->isGranted('EVENT_DELETE', $event)) {
+            throw $this->createAccessDeniedException();
+        }
+
         if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->getPayload()->get('_token'))) {
-            $entityManager->remove($event);
-            $entityManager->flush();
+            $this->entityManager->remove($event);
+            $this->entityManager->flush();
         }
 
         return $this->redirectToRoute('app_event_index', [], Response::HTTP_SEE_OTHER);
