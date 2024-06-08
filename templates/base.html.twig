@@ -24,6 +24,7 @@
                 <ul class="navbar-nav align-items-lg-center ms-auto me-lg-5">
                         <li class="nav-item"><a class="nav-link click-scroll" href="{{ path('app_event_index') }}">Evenements</a></li>
                         {%if app.user%}
+                            <li class="nav-item"><a class="nav-link click-scroll" href="{{ path('app_event_new') }}">Créer un evenement</a></li>
 							<li class="nav-item"><a class="nav-link click-scroll" href="{{ path('app_inscription_index') }}">Inscriptions</a></li>
                             <li class="nav-item"><a class="nav-link click-scroll" href="{{ path('app_profile') }}">Profile</a></li>
                         {% else %}
