@@ -10,15 +10,15 @@ readonly class EmailManager
 {
     public function __construct(
         private TransportInterface $mailer
-        )
+    )
     {
     }
 
     /**
      * @throws TransportExceptionInterface
      */
-    public function sendMail (Email $email): void
+    public function sendMail(Email $email): void
     {
-    $this->mailer->send($email);
+        $this->mailer->send($email);
     }
 }

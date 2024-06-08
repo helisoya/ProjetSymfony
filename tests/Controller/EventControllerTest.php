@@ -16,7 +16,6 @@ class EventControllerTest extends WebTestCase
     private EntityManagerInterface $manager;
     private EntityRepository $repository;
     private string $path = '/event/';
-
     private User $user;
     private Event $fixture;
 
@@ -97,6 +96,14 @@ class EventControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(200);
 
         // Use assertions to check that the properties are properly displayed.
+        self::assertSelectorTextSame('tr td', $this->fixture->getId());
+        self::assertSelectorTextSame('tr:nth-child(2) td', $this->fixture->getTitle());
+        self::assertSelectorTextSame('tr:nth-child(3) td', $this->fixture->getDescription());
+        self::assertSelectorTextSame('tr:nth-child(4) td', $this->fixture->getStartDate()->format('Y-m-d H:i:s'));
+        self::assertSelectorTextSame('tr:nth-child(5) td', $this->fixture->getParticipants()->count() . ' / ' . $this->fixture->getMaxParticipants());
+        self::assertSelectorTextSame('tr:nth-child(6) td', $this->fixture->isPublic() ? 'Yes' : 'No');
+        self::assertSelectorTextSame('tr:nth-child(7) td', $this->fixture->getCreator()->getNom() . ' ' . $this->fixture->getCreator()->getPrenom());
+
     }
 
     public function testEdit(): void

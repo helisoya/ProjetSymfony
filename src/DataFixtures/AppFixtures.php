@@ -42,6 +42,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface, OrderedFixtu
         $event->setMaxParticipants(50);
         $event->setStartDate(new DateTime("2024-08-08 20:10"));
         $event->addParticipant($user);
+        $event->setCreator($user2);
 
         $event2 = new Event();
         $event2->setTitle("Pierre Engine Reveal 1.1");
@@ -50,7 +51,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface, OrderedFixtu
         $event2->setMaxParticipants(78);
         $event2->setStartDate(new DateTime("2024-09-08 20:10"));
         $event2->addParticipant($user);
-        $event2->addParticipant($user2);
+        $event2->setCreator($user2);
 
         $manager->persist($user);
         $manager->persist($user2);
