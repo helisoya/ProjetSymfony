@@ -6,7 +6,9 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Form\EventType;
 use App\Repository\EventRepository;
+use App\Service\EventPlaceManager;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\EmailManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +25,8 @@ class EventController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly AuthorizationCheckerInterface $authorizationChecker
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+        private readonly  EventPlaceManager $eventPlaceManager,
     )
     {
     }
@@ -76,17 +79,18 @@ class EventController extends AbstractController
 
         return $this->render('event/show.html.twig', [
             'event' => $event,
-            'userInscrit'=> $userInscrit
+            'userInscrit'=> $userInscrit,
+            'remainingSeats'=>$this->eventPlaceManager->computeRemainingSeats($event)
         ]);
     }
 
     #[Route('/{id}/register', name: 'app_event_register', methods: ['GET'])]
-    public function register(Event $event, EntityManagerInterface $entityManager,TransportInterface $mailer): Response
+    public function register(Event $event, EntityManagerInterface $entityManager,EmailManager $emailManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
-        if($user !== null && $event->getParticipants()->count() < $event->getMaxParticipants()){
+        if($user !== null && $this->eventPlaceManager->computeRemainingSeats($event) > 0){
             $event->addParticipant($user);
             $entityManager->persist($event);
             $entityManager->flush();
@@ -96,20 +100,15 @@ class EventController extends AbstractController
                 ->to($user->getEmail())
                 ->subject('Inscription à la conférence')
                 ->text('Bonjour, vous êtes inscrit à la conférence : ' .$event->getTitle() . ". Merci de faire confiance à Pierre Softwares.");
-            try{
-                $mailer->send($email);
-            }catch (TransportExceptionInterface $e){
-                dd($e);
-            }
 
-
+            $emailManager->sendMail($email);
         }
 
         return $this->redirectToRoute('app_event_show',["id"=>$event->getId()],Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/unregister', name: 'app_event_unregister', methods: ['GET'])]
-    public function unregister(Event $event, EntityManagerInterface $entityManager,TransportInterface $mailer): Response
+    public function unregister(Event $event, EntityManagerInterface $entityManager,EmailManager $emailManager): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -126,11 +125,7 @@ class EventController extends AbstractController
                 ->subject('Desinscription à la conférence')
                 ->text('Bonjour, vous n\'êtes plus inscrit à la conférence : ' .$event->getTitle() . ". Merci de faire confiance à Pierre Softwares.");
 
-            try{
-                $mailer->send($email);
-            }catch (TransportExceptionInterface $e){
-                dd($e);
-            }
+            $emailManager->sendMail($email);
         }
 
         return $this->redirectToRoute('app_event_show',["id"=>$event->getId()],Response::HTTP_SEE_OTHER);
