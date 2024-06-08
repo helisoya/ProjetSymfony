@@ -1,20 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Event index{% endblock %}
+{% block title %}Inscriptions{% endblock %}
 
 {% block body %}
-    <h1>Event index</h1>
+    <h1>Inscriptions</h1>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Title</th>
+                <th>Nom</th>
                 <th>Description</th>
-                <th>StartDate</th>
+                <th>Date</th>
                 <th>Participants</th>
-                <th>IsPublic</th>
-                <th>actions</th>
+                <th>Public ?</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -27,8 +27,7 @@
                 <td>{{ event.participants|length }}/{{ event.maxParticipants }}</td>
                 <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
                 <td>
-                    <a href="{{ path('app_event_show', {'id': event.id}) }}">show</a>
-                    <a href="{{ path('app_event_edit', {'id': event.id}) }}">edit</a>
+                    <a href="{{ path('app_event_show', {'id': event.id}) }}">Voir</a>
                 </td>
             </tr>
         {% else %}
@@ -38,6 +37,4 @@
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('app_event_new') }}">Create new</a>
 {% endblock %}

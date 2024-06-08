@@ -138,4 +138,19 @@ class UserController extends AbstractController
             'user' => $user,
         ]);
     }
+
+    #[Route('/inscriptions', name: 'app_inscription_index', methods: ['GET'])]
+    public function index(): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($user === null) {
+            return $this->redirect('/login');
+        }
+
+        return $this->render('user/inscriptions.html.twig', [
+            'events' => $user->getEvents(),
+        ]);
+    }
 }

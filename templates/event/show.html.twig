@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Event{% endblock %}
+{% block title %}Evenement{% endblock %}
 
 {% block body %}
-    <h1>Event</h1>
+    <h1>Evenement</h1>
 
     <table class="table">
         <tbody>
@@ -12,7 +12,7 @@
                 <td>{{ event.id }}</td>
             </tr>
             <tr>
-                <th>Title</th>
+                <th>Titre</th>
                 <td>{{ event.title }}</td>
             </tr>
             <tr>
@@ -20,23 +20,28 @@
                 <td>{{ event.description }}</td>
             </tr>
             <tr>
-                <th>StartDate</th>
+                <th>Date</th>
                 <td>{{ event.startDate ? event.startDate|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
-                <th>MaxParticipants</th>
-                <td>{{ event.maxParticipants }}</td>
+                <th>Participants</th>
+                <td>{{ event.participants | length }} / {{ event.maxParticipants }}</td>
             </tr>
             <tr>
-                <th>IsPublic</th>
+                <th>Public</th>
                 <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_event_index') }}">back to list</a>
+    {% if app.user and userInscrit %}
+        <a href="{{ path('app_event_unregister', {'id': event.id}) }}">Se désinscrire</a>
+    {% elseif app.user and not (event.participants | length >= event.maxParticipants) %}
+        <a href="{{ path('app_event_register', {'id': event.id}) }}">S'inscrire</a>
+    {% endif %}
 
-    <a href="{{ path('app_event_edit', {'id': event.id}) }}">edit</a>
+    <a href="{{ path('app_event_index') }}">Retour</a>
 
+    <a href="{{ path('app_event_edit', {'id': event.id}) }}">Editer</a>
     {{ include('event/_delete_form.html.twig') }}
 {% endblock %}
