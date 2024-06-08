@@ -14,6 +14,7 @@
                 <th>StartDate</th>
                 <th>Participants</th>
                 <th>IsPublic</th>
+                <th>Creator</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -27,6 +28,7 @@
                 <td>{{ event.startDate ? event.startDate|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ event.participants|length }}/{{ event.maxParticipants }}</td>
                 <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
+                <td>{{ event.creator.nom }} {{ event.creator.prenom }}</td>
                 <td>
                     <a href="{{ path('app_event_show', {'id': event.id}) }}">show</a>
                     <a href="{{ path('app_event_edit', {'id': event.id}) }}">edit</a>

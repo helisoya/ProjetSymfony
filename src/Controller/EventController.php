@@ -5,16 +5,12 @@ namespace App\Controller;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Form\EventType;
-use App\Repository\EventRepository;
 use App\Service\EventPlaceManager;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\EmailManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -27,6 +23,7 @@ class EventController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly  EventPlaceManager $eventPlaceManager,
+        private readonly EmailManager $emailManager
     )
     {
     }
@@ -86,15 +83,15 @@ class EventController extends AbstractController
     }
 
     #[Route('/{id}/register', name: 'app_event_register', methods: ['GET'])]
-    public function register(Event $event, EntityManagerInterface $entityManager,EmailManager $emailManager): Response
+    public function register(Event $event): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
         if($user !== null && $this->eventPlaceManager->computeRemainingSeats($event) > 0){
             $event->addParticipant($user);
-            $entityManager->persist($event);
-            $entityManager->flush();
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
 
             $email = (new Email())
                 ->from('contact.squadron70@gmail.com')
@@ -102,22 +99,22 @@ class EventController extends AbstractController
                 ->subject('Inscription à la conférence')
                 ->text('Bonjour, vous êtes inscrit à la conférence : ' .$event->getTitle() . ". Merci de faire confiance à Pierre Softwares.");
 
-            $emailManager->sendMail($email);
+            $this->emailManager->sendMail($email);
         }
 
         return $this->redirectToRoute('app_event_show',["id"=>$event->getId()],Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/unregister', name: 'app_event_unregister', methods: ['GET'])]
-    public function unregister(Event $event, EntityManagerInterface $entityManager,EmailManager $emailManager): Response
+    public function unregister(Event $event): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
         if($user !== null){
             $event->removeParticipant($user);
-            $entityManager->persist($event);
-            $entityManager->flush();
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
 
 
             $email = (new Email())
@@ -126,7 +123,7 @@ class EventController extends AbstractController
                 ->subject('Desinscription à la conférence')
                 ->text('Bonjour, vous n\'êtes plus inscrit à la conférence : ' .$event->getTitle() . ". Merci de faire confiance à Pierre Softwares.");
 
-            $emailManager->sendMail($email);
+            $this->emailManager->sendMail($email);
         }
 
         return $this->redirectToRoute('app_event_show',["id"=>$event->getId()],Response::HTTP_SEE_OTHER);

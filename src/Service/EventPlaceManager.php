@@ -7,8 +7,7 @@ use App\Entity\Event;
 
 readonly class EventPlaceManager
 {
-    public function __construct(
-        )
+    public function __construct()
     {
     }
 

@@ -31,6 +31,10 @@
                 <th>Public</th>
                 <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
             </tr>
+            <tr>
+                <th>Creator</th>
+                <td>{{ event.creator.nom }} {{ event.creator.prenom }}</td>
+            </tr>
         </tbody>
     </table>
 

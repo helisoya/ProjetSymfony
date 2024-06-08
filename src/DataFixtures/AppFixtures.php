@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Event;
 use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
@@ -23,7 +24,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface, OrderedFixtu
         $user = new User();
         $user->setEmail('pierre@pierresoftwares.com');
         $user->setRoles(['ROLE_ADMIN']);
-        $user->setPassword($this->passwordHasher->hashPassword($user, '12345678'));
+        $user->setPassword($this->passwordHasher->hashPassword($user, '4h!RZ[VVB0G3xM8'));
         $user->setNom('Pierre');
         $user->setPrenom('Dupont');
 
@@ -39,7 +40,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface, OrderedFixtu
         $event->setDescription("Reveal de la version 1.0 de Pierre Engine.");
         $event->setIsPublic(true);
         $event->setMaxParticipants(50);
-        $event->setStartDate(new \DateTime("2024-08-08 20:10"));
+        $event->setStartDate(new DateTime("2024-08-08 20:10"));
         $event->addParticipant($user);
 
         $event2 = new Event();
@@ -47,7 +48,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface, OrderedFixtu
         $event2->setDescription("Reveal de la version 1.1 de Pierre Engine.");
         $event2->setIsPublic(false);
         $event2->setMaxParticipants(78);
-        $event2->setStartDate(new \DateTime("2024-09-08 20:10"));
+        $event2->setStartDate(new DateTime("2024-09-08 20:10"));
         $event2->addParticipant($user);
         $event2->addParticipant($user2);
 
