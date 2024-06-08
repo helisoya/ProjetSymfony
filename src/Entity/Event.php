@@ -37,6 +37,10 @@ class Event
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'events')]
     private Collection $participants;
 
+    #[ORM\ManyToOne(inversedBy: 'createdEvents')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $creator = null;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
@@ -100,7 +104,7 @@ class Event
         return $this->isPublic;
     }
 
-    public function setPublic(bool $isPublic): static
+    public function setIsPublic(bool $isPublic): static
     {
         $this->isPublic = $isPublic;
 
@@ -127,6 +131,18 @@ class Event
     public function removeParticipant(User $participant): static
     {
         $this->participants->removeElement($participant);
+
+        return $this;
+    }
+
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?User $creator): static
+    {
+        $this->creator = $creator;
 
         return $this;
     }
