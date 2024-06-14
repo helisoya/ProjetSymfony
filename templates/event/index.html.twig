@@ -4,36 +4,54 @@
 
 {% block body %}
     <h1>Event index</h1>
+    <form>
+        <label>Title :
+            <input id="search-title" type="text">
+        </label>
+        <label>Description
+            <input id="search-description" type="text">
+        </label>
+        <label> creator :
+            <select id="search-creator">
+                <option value="null" selected>Chose a creator</option>
+                {% for creator in creators %}
+                    <option value="{{ creator.id }}">{{ creator.nom }} {{ creator.prenom }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <button type="button" id="button-submit" class="btn">search</button>
+        <button type="reset" class="btn">reset</button>
+    </form>
 
     <table class="table">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>StartDate</th>
-                <th>Participants</th>
-                <th>IsPublic</th>
-                <th>Creator</th>
-                <th>actions</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>StartDate</th>
+            <th>Participants</th>
+            <th>IsPublic</th>
+            <th>Creator</th>
+            <th>actions</th>
+        </tr>
         </thead>
         <tbody>
         {% for event in events %}
             {% if event.isPublic or app.user %}
-            <tr>
-                <td>{{ event.id }}</td>
-                <td>{{ event.title }}</td>
-                <td>{{ event.description }}</td>
-                <td>{{ event.startDate ? event.startDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ event.participants|length }}/{{ event.maxParticipants }}</td>
-                <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
-                <td>{{ event.creator.nom }} {{ event.creator.prenom }}</td>
-                <td>
-                    <a href="{{ path('app_event_show', {'id': event.id}) }}">show</a>
-                    <a href="{{ path('app_event_edit', {'id': event.id}) }}">edit</a>
-                </td>
-            </tr>
+                <tr>
+                    <td>{{ event.id }}</td>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.description }}</td>
+                    <td>{{ event.startDate ? event.startDate|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ event.participants|length }}/{{ event.maxParticipants }}</td>
+                    <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
+                    <td>{{ event.creator.nom }} {{ event.creator.prenom }}</td>
+                    <td>
+                        <a href="{{ path('app_event_show', {'id': event.id}) }}">show</a>
+                        <a href="{{ path('app_event_edit', {'id': event.id}) }}">edit</a>
+                    </td>
+                </tr>
             {% endif %}
         {% else %}
             <tr>
@@ -44,4 +62,30 @@
     </table>
 
     <a href="{{ path('app_event_new') }}">Create new</a>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $(document).ready(()=> {
+            $('button-submit').onclick((e) => {
+                e.preventDefault()
+                $.ajax({
+                    url: "/search",
+                    type: "get",
+                    data: {
+                        title: $('search-title').getValue(),
+                        description: $('search-description').getValue(),
+                        creatorId: $('search-creator').getValue(),
+                    },
+                    success: function (response) {
+                        console.log(response)
+                    },
+                    error: function (xhr) {
+                        console.log(xhr)
+                    }
+                });
+                document.getElementById('search-title')
+
+            });
+        });
+    </script>
 {% endblock %}

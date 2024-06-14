@@ -5,6 +5,10 @@ import './js/custom';
 import './js/jquery.min';
 import './js/jquery.sticky';
 
+const jQuery = require('jquery')
+window.jQuery = jQuery
+window.$ = jQuery;
+
 /*
  * Welcome to your app's main JavaScript file!
  *
