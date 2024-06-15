@@ -3,11 +3,33 @@
 {% block title %}Edit Event{% endblock %}
 
 {% block body %}
-    <h1>Edit Event</h1>
+    <main>
+        <video autoplay="" loop="" muted="" class="custom-video position-fixed" poster="">
+            <source src="{{ asset('build/video/pexels-2022395.mp4') }}" type="video/mp4">
 
-    {{ include('event/_form.html.twig', {'button_label': 'Update'}) }}
+            Your browser does not support the video tag.
+        </video>
 
-    <a href="{{ path('app_event_index') }}">back to list</a>
-
-    {{ include('event/_delete_form.html.twig') }}
+        <section class="ticket-section section-padding">
+            <div class="section-overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_event_index') }}">
+                            <button class="btn custom-btn">back to list</button>
+                        </a>
+                        {{ include('event/_delete_form.html.twig') }}
+                    </div>
+                    <div class="col-lg-6 col-10 mx-auto">
+                        <form class="custom-form ticket-form mb-5 mb-lg-0">
+                            <h2 class="text-center mb-4">Edit Event</h2>
+                            <div class="ticket-form-body">
+                                {{ include('event/_form.html.twig', {'button_label': 'Update'}) }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

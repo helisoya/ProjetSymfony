@@ -5,3 +5,11 @@
 body {
     background-color: lightgray;
 }
+
+.hero-section {
+    height: calc(100vh - 83px);
+}
+
+.ticket-section {
+    background-image: none;
+}

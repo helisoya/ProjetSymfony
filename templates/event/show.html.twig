@@ -3,49 +3,55 @@
 {% block title %}Evenement{% endblock %}
 
 {% block body %}
-    <h1>Evenement</h1>
+    <main>
+        <video autoplay="" loop="" muted="" class="custom-video position-fixed" poster="">
+            <source src="{{ asset('build/video/pexels-2022395.mp4') }}" type="video/mp4">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ event.id }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ event.title }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ event.description }}</td>
-            </tr>
-            <tr>
-                <th>Date</th>
-                <td>{{ event.startDate ? event.startDate|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Participants</th>
-                <td>{{ event.participants | length }} / {{ event.maxParticipants }}</td>
-            </tr>
-            <tr>
-                <th>Public</th>
-                <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>Creator</th>
-                <td>{{ event.creator.nom }} {{ event.creator.prenom }}</td>
-            </tr>
-        </tbody>
-    </table>
+            Your browser does not support the video tag.
+        </video>
 
-    {% if app.user and userInscrit %}
-        <a href="{{ path('app_event_unregister', {'id': event.id}) }}">Se désinscrire</a>
-    {% elseif app.user and remainingSeats > 0 %}
-        <a href="{{ path('app_event_register', {'id': event.id}) }}">S'inscrire</a>
-    {% endif %}
+        <section class="ticket-section section-padding" style="padding-bottom: calc(100vh - 724px);">
+            <div class="section-overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <a href="{{ path('app_event_index') }}">
+                        <button class="btn custom-btn">back to list</button>
+                    </a>
+                    <div class="col-lg-6 col-10 mx-auto">
+                        <div class="custom-form ticket-form mb-5 mb-lg-0">
+                            <h2 class="text-center mb-4">{{ event.title }}</h2>
+                            <p>{{ event.description }}</p>
+                            <h6>Event Info :</h6>
+                            <div class="ticket-form-body">
+                                <ul class="pricing-list mt-3">
+                                    <li class="pricing-list-item">The {{event.startDate|date('Y/m/d') }} at {{ event.startDate|date('H:i:s') }}</li>
 
-    <a href="{{ path('app_event_index') }}">Retour</a>
+                                    <li class="pricing-list-item">{{ event.participants|length }}/{{ event.maxParticipants }} participants</li>
 
-    <a href="{{ path('app_event_edit', {'id': event.id}) }}">Editer</a>
-    {{ include('event/_delete_form.html.twig') }}
+                                    <li class="pricing-list-item">{{ event.isPublic ? 'Public' : 'Private' }}</li>
+
+                                    <li class="pricing-list-item">By {{ event.creator.nom }} {{ event.creator.prenom }}</li>
+                                </ul>
+                                <div class="row mb-5">
+                                    <div class="col-lg-6 col-10 mx-auto d-flex gap-3 justify-content-between">
+                                        <a href="{{ path('app_event_edit', {'id': event.id}) }}"><button class="btn custom-btn">Edit</button></a>
+                                        {{ include('event/_delete_form.html.twig') }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-10 mx-auto d-flex gap-3 justify-content-center">
+                                        {% if app.user and userInscrit %}
+                                            <a href="{{ path('app_event_unregister', {'id': event.id}) }}"><button class="btn custom-btn">Se désinscrire</button></a>
+                                        {% elseif app.user and remainingSeats > 0 %}
+                                            <a href="{{ path('app_event_register', {'id': event.id}) }}"><button class="btn custom-btn">S'inscrire</button></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

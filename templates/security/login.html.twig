@@ -3,31 +3,53 @@
 {% block title %}Connection{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+    <main>
+        <video autoplay="" loop="" muted="" class="custom-video position-fixed" poster="">
+            <source src="{{ asset('build/video/pexels-2022395.mp4') }}" type="video/mp4">
 
-    <h1 class="h3 mb-3 font-weight-normal">Connection</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Mot de passe</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+            Your browser does not support the video tag.
+        </video>
 
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+        <section class="ticket-section section-padding" style="padding-bottom: calc(100vh - 675px);">
+            <div class="section-overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-10 mx-auto">
+                        <div class="custom-form ticket-form mb-5 mb-lg-0">
+                            <h2 class="text-center mb-4">LogIn !</h2>
+                            <div class="ticket-form-body">
+                                <form method="post">
+                                    {% if error %}
+                                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                                    {% endif %}
+                                    <label for="inputEmail">Email</label>
+                                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+                                    <label for="inputPassword">Mot de passe</label>
+                                    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
 
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Se souvenir de moi
-        </label>
-    </div>
+                                    <input type="hidden" name="_csrf_token"
+                                           value="{{ csrf_token('authenticate') }}"
+                                    >
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Connection
-    </button>
+                                    <div class="checkbox mb-3">
+                                        <label>
+                                            <input type="checkbox" name="_remember_me"> Se souvenir de moi
+                                        </label>
+                                    </div>
 
-    <a href="/register" class="btn btn-lg btn-primary">Nouveau compte</a>
-</form>
+                                    <button class="btn btn-lg btn-primary" type="submit">
+                                        Connection
+                                    </button>
+
+                                    <a href="/register">
+                                        <button type="button" class="btn custom-btn">Nouveau compte</button>
+                                    </a>
+                                </form>
+                            </div>
+                        </d>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

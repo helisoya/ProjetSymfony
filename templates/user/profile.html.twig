@@ -3,10 +3,59 @@
 {% block title %}Profile{% endblock %}
 
 {% block body %}
-    <h3>Profil : </h3>
-    <p>Nom : {{ user.nom }}</p>
-    <p>Prenom : {{ user.prenom }}</p>
-    <p>Email : {{ user.email }}</p>
-    <a href="{{ path('app_edit_profile') }}">Edition</a>
-    <a href="{{ path('app_logout') }}">Déconnection</a>
+    <main>
+        <video autoplay="" loop="" muted="" class="custom-video position-fixed" poster="">
+            <source src="{{ asset('build/video/pexels-2022395.mp4') }}" type="video/mp4">
+
+            Your browser does not support the video tag.
+        </video>
+
+        <section class="ticket-section section-padding" style="padding-bottom: calc(100vh - 796px)">
+            <div class="section-overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_event_index') }}">
+                            <button class="btn custom-btn">back to list</button>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-10 mx-auto">
+                        <div class="custom-form ticket-form mb-5 mb-lg-0">
+                            <h2 class="text-center mb-4">Your Information</h2>
+                            <div class="ticket-form-body">
+                                <div class="row">
+                                    <label class="form-label"> Last name:
+                                        <input placeholder="{{ user.nom }}" class="form-control"
+                                               type="text" value="{{ user.nom }}" disabled>
+                                    </label>
+                                </div>
+                                <div class="row">
+                                    <label class="form-label"> First name:
+                                        <input placeholder="{{ user.prenom }}" class="form-control"
+                                               type="text" value="{{ user.prenom }}" disabled>
+                                    </label>
+                                </div>
+                                <div class="row">
+                                    <label class="form-label"> email:
+                                        <input placeholder="{{ user.email }}" class="form-control"
+                                               type="text" value="{{ user.email }}" disabled>
+                                    </label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-10 mx-auto d-flex gap-3 justify-content-center">
+                                        <a href="{{ path('app_edit_profile') }}">
+                                            <button type="button" class="btn custom-btn">Edit</button>
+                                        </a>
+                                        <a href="{{ path('app_logout') }}">
+                                            <button type="button" class="btn custom-btn">Disconnect</button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

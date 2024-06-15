@@ -3,38 +3,72 @@
 {% block title %}Inscriptions{% endblock %}
 
 {% block body %}
-    <h1>Inscriptions</h1>
+    <main>
+        <div class="video-wrap">
+            <video autoplay="" loop="" muted="" class="custom-video" poster="">
+                <source src="{{ asset('build/video/pexels-2022395.mp4') }}" type="video/mp4">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>Description</th>
-                <th>Date</th>
-                <th>Participants</th>
-                <th>Public ?</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for event in events %}
-            <tr>
-                <td>{{ event.id }}</td>
-                <td>{{ event.title }}</td>
-                <td>{{ event.description }}</td>
-                <td>{{ event.startDate ? event.startDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ event.participants|length }}/{{ event.maxParticipants }}</td>
-                <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
-                <td>
-                    <a href="{{ path('app_event_show', {'id': event.id}) }}">Voir</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <section class="pricing-section" id="section_5">
+            <div class="section-overlay"></div>
+            <div class="pt-5 container section-bg d-flex flex-wrap justify-content-center" style="max-width: 100%; padding-bottom: calc(100vh - 592px)">
+                <div class="container row">
+                    <div class="d-flex justify-content-between pb-5">
+                        <a href="{{ path('app_event_index') }}">
+                            <button class="btn custom-btn">back to list</button>
+                        </a>
+                    </div>
+                    {% for event in events %}
+                        <div class="col-lg-6 col-12 mt-4 mt-lg-0 pb-4">
+                            <div class="pricing-thumb">
+                                <div class="d-flex">
+                                    <div>
+                                        <h3>{{ event.title }}</h3>
+
+                                        <p>{{ event.description }}</p>
+                                    </div>
+                                </div>
+
+                                <ul class="pricing-list mt-3">
+                                    <li class="pricing-list-item">The {{event.startDate|date('Y/m/d') }} at {{ event.startDate|date('H:i:s') }}</li>
+
+                                    <li class="pricing-list-item">{{ event.participants|length }}/{{ event.maxParticipants }} participants</li>
+
+                                    <li class="pricing-list-item">{{ event.isPublic ? 'Public' : 'Private' }}</li>
+
+                                    <li class="pricing-list-item">By {{ event.creator.nom }} {{ event.creator.prenom }}</li>
+                                </ul>
+
+                                <div class="row">
+                                    <div class="d-flex gap-5">
+                                        <a class="link-fx-1 color-contrast-higher mt-4" href="{{ path('app_event_show', {'id': event.id}) }}">
+                                            <span>Show Event</span>
+                                            <svg class="icon" viewBox="0 0 32 32" aria-hidden="true">
+                                                <g fill="none" stroke="currentColor" stroke-linecap="round"
+                                                   stroke-linejoin="round">
+                                                    <circle cx="16" cy="16" r="15.5"></circle>
+                                                    <line x1="10" y1="18" x2="16" y2="12"></line>
+                                                    <line x1="16" y1="12" x2="22" y2="18"></line>
+                                                </g>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="row">
+                            <div class="pricing-thumb">
+                                <div class="d-flex justify-content-center">
+                                    <h6>No pending Events</h6>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

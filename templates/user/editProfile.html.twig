@@ -3,16 +3,40 @@
 {% block title %}Edition du profil{% endblock %}
 
 {% block body %}
-    <h1>Edition du profil</h1>
+    <main>
+        <video autoplay="" loop="" muted="" class="custom-video position-fixed" poster="">
+            <source src="{{ asset('build/video/pexels-2022395.mp4') }}" type="video/mp4">
 
+            Your browser does not support the video tag.
+        </video>
 
-    {{ form_start(editForm) }}
-        {{ form_errors(editForm) }}
-        {{ form_row(editForm.email) }}
-        {{ form_row(editForm.nom) }}
-        {{ form_row(editForm.prenom) }}
-        {{ form_row(editForm.password) }}
+        <section class="ticket-section section-padding">
+            <div class="section-overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_profile') }}">
+                            <button class="btn custom-btn">back profile</button>
+                        </a>
+                    </div>
+                    <div class="col-lg-6 col-10 mx-auto">
+                        <form class="custom-form ticket-form mb-5 mb-lg-0">
+                            <h2 class="text-center mb-4">Edit profile</h2>
+                            <div class="ticket-form-body">
+                                {{ form_start(editForm) }}
+                                    {{ form_errors(editForm) }}
+                                    {{ form_row(editForm.email) }}
+                                    {{ form_row(editForm.nom) }}
+                                    {{ form_row(editForm.prenom) }}
+                                    {{ form_row(editForm.password) }}
 
-        <button type="submit" class="btn">Valider</button>
-    {{ form_end(editForm) }}
+                                    <button type="submit" class="btn">Valider</button>
+                                {{ form_end(editForm) }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

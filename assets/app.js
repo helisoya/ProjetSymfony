@@ -11,3 +11,5 @@ window.$ = jQuery;
 
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
+import './js/custom.js';
+import 'jquery-sticky'

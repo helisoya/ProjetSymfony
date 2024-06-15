@@ -3,79 +3,187 @@
 {% block title %}Event index{% endblock %}
 
 {% block body %}
-    <h1>Event index</h1>
-    <form>
-        <label for="search-title"> Title :
-            <input id="search-title" type="text" name="title" value="{{ filters['title'] ?? '' }}">
-        </label>
-        <label for="search-description"> Description :
-            <input id="search-description" type="text" name="description" value="{{ filters['description'] ?? '' }}">
-        </label>
-        <label for="search-minStartDate"> Min start date :
-            <input id="search-minStartDate" type="date" name="minStartDate" value="{{ filters['minStartDate'] ?? '' }}">
-        </label>
-        <label for="search-maxStartDate"> Max start date :
-            <input id="search-maxStartDate" type="date" name="maxStartDate" value="{{ filters['maxStartDate'] ?? '' }}">
-        </label>
-        <label for="search-maxParticipants"> Max Participants :
-            <input id="search-maxParticipants" type="text" name="maxParticipants" value="{{ filters['maxParticipants'] ?? '' }}">
-        </label>
-        <label for="search-isPublic"> Public :
-            <select id="search-isPublic" name="isPublic">
-                <option value="" {{ filters['isPublic'] ?: 'selected' }}>Select a value</option>
-                <option value="Yes" {{ filters['isPublic'] is same as 'Yes' ? 'selected' }}>Yes</option>
-                <option value="No" {{ filters['isPublic'] is same as 'No' ? 'selected' }}>No</option>
-            </select>
-        </label>
-        <label for="search-creator"> Creator :
-            <select id="search-creator" name="creator">
-                <option value="" {{ filters['creator'] ?: 'selected' }}>Select a creator</option>
-                {% for creator in creators %}
-                    <option value="{{ creator.id }}" {{ filters['creator'] != creator.id ?: 'selected' }}>{{ creator.nom }} {{ creator.prenom }}</option>
-                {% endfor %}
-            </select>
-        </label>
-        <button type="submit" id="button-submit" class="btn">search</button>
-    </form>
-    <a href="{{ path('app_event_index') }}"><button type="button" class="btn">reset</button></a>
+    <main>
+        <div class="video-wrap">
+            <video autoplay="" loop="" muted="" class="custom-video" poster="">
+                <source src="{{ asset('build/video/pexels-2022395.mp4') }}" type="video/mp4">
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>StartDate</th>
-            <th>Participants</th>
-            <th>IsPublic</th>
-            <th>Creator</th>
-            <th>actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for event in events %}
-            {% if event.isPublic or app.user %}
-                <tr>
-                    <td>{{ event.id }}</td>
-                    <td>{{ event.title }}</td>
-                    <td>{{ event.description }}</td>
-                    <td>{{ event.startDate ? event.startDate|date('Y-m-d H:i:s') : '' }}</td>
-                    <td>{{ event.participants|length }}/{{ event.maxParticipants }}</td>
-                    <td>{{ event.isPublic ? 'Yes' : 'No' }}</td>
-                    <td>{{ event.creator.nom }} {{ event.creator.prenom }}</td>
-                    <td>
-                        <a href="{{ path('app_event_show', {'id': event.id}) }}">show</a>
-                        <a href="{{ path('app_event_edit', {'id': event.id}) }}">edit</a>
-                    </td>
-                </tr>
-            {% endif %}
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <section class="ticket-section section-padding">
+            <div class="section-overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-10 mx-auto">
+                        <form class="custom-form ticket-form mb-5 mb-lg-0">
+                            <h2 class="text-center mb-4">Filters</h2>
+                            <div class="ticket-form-body">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="row">
+                                            <label for="search-title">
+                                                <input placeholder="Title" class="form-control" id="search-title"
+                                                       type="text" name="title" value="{{ filters['title'] ?? '' }}">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="row">
+                                            <label for="search-description">
+                                                <input placeholder="Description" class="form-control"
+                                                       id="search-description" type="text" name="description"
+                                                       value="{{ filters['description'] ?? '' }}">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6>Between dates</h6>
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="row">
+                                            <label class="form-label" for="search-minStartDate"> Min :
+                                                <input class="form-control" id="search-minStartDate" type="date"
+                                                       name="minStartDate" value="{{ filters['minStartDate'] ?? '' }}">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="row">
+                                            <label class="form-label" for="search-maxStartDate"> Max :
+                                                <input class="form-control" id="search-maxStartDate" type="date"
+                                                       name="maxStartDate" value="{{ filters['maxStartDate'] ?? '' }}">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="row">
+                                            <label for="search-maxParticipants"> Max Participants :
+                                                <input class="form-control" id="search-maxParticipants" type="text"
+                                                       name="maxParticipants"
+                                                       value="{{ filters['maxParticipants'] ?? '' }}">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="row">
+                                            <label for="search-isPublic"> Public :
+                                                <select class="form-control form-select" id="search-isPublic"
+                                                        name="isPublic">
+                                                    <option value="" {{ filters['isPublic'] ?: 'selected' }}>Select a
+                                                        value
+                                                    </option>
+                                                    <option value="Yes" {{ filters['isPublic'] is same as 'Yes' ? 'selected' }}>
+                                                        Yes
+                                                    </option>
+                                                    <option value="No" {{ filters['isPublic'] is same as 'No' ? 'selected' }}>
+                                                        No
+                                                    </option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label for="search-creator"> Creator :
+                                        <select class="form-control form-select" id="search-creator" name="creator">
+                                            <option value="" {{ filters['creator'] ?: 'selected' }}>Select a creator
+                                            </option>
+                                            {% for creator in creators %}
+                                                <option value="{{ creator.id }}" {{ filters['creator'] != creator.id ?: 'selected' }}>{{ creator.nom }} {{ creator.prenom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-10 mx-auto d-flex gap-3 justify-content-center">
+                                        <button type="submit" id="button-submit" class="btn custom-btn">search</button>
+                                        <a href="{{ path('app_event_index') }}">
+                                            <button type="button" class="btn custom-btn">reset</button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="pricing-section section-padding section-bg" id="section_5">
+            <div class="container">
+                <div class="row">
 
-    <a href="{{ path('app_event_new') }}">Create new</a>
+                    <div class="col-lg-8 col-12 mx-auto">
+                        <h2 class="text-center mb-4">Pending Events</h2>
+                    </div>
+                    <a class="mb-5" href="{{ path('app_event_new') }}">
+                        <button type="button" class="btn custom-btn">Create new</button>
+                    </a>
+
+                    {% for event in events %}
+                        {% if event.isPublic or app.user %}
+                            <div class="col-lg-6 col-12 mt-4 mt-lg-0">
+                                <div class="pricing-thumb">
+                                    <div class="d-flex">
+                                        <div>
+                                            <h3>{{ event.title }}</h3>
+
+                                            <p>{{ event.description }}</p>
+                                        </div>
+                                    </div>
+
+                                    <ul class="pricing-list mt-3">
+                                        <li class="pricing-list-item">The {{event.startDate|date('Y/m/d') }} at {{ event.startDate|date('H:i:s') }}</li>
+
+                                        <li class="pricing-list-item">{{ event.participants|length }}/{{ event.maxParticipants }} participants</li>
+
+                                        <li class="pricing-list-item">{{ event.isPublic ? 'Public' : 'Private' }}</li>
+
+                                        <li class="pricing-list-item">By {{ event.creator.nom }} {{ event.creator.prenom }}</li>
+                                    </ul>
+
+                                    <div class="row">
+                                        <div class="d-flex gap-5">
+                                            <a class="link-fx-1 color-contrast-higher mt-4" href="{{ path('app_event_show', {'id': event.id}) }}">
+                                                <span>Show Event</span>
+                                                <svg class="icon" viewBox="0 0 32 32" aria-hidden="true">
+                                                    <g fill="none" stroke="currentColor" stroke-linecap="round"
+                                                       stroke-linejoin="round">
+                                                        <circle cx="16" cy="16" r="15.5"></circle>
+                                                        <line x1="10" y1="18" x2="16" y2="12"></line>
+                                                        <line x1="16" y1="12" x2="22" y2="18"></line>
+                                                    </g>
+                                                </svg>
+                                            </a>
+                                            <a class="link-fx-1 color-contrast-higher mt-4" href="{{ path('app_event_edit', {'id': event.id}) }}">
+                                                <span>Edit Event</span>
+                                                <svg class="icon" viewBox="0 0 32 32" aria-hidden="true">
+                                                    <g fill="none" stroke="currentColor" stroke-linecap="round"
+                                                       stroke-linejoin="round">
+                                                        <circle cx="16" cy="16" r="15.5"></circle>
+                                                        <line x1="10" y1="18" x2="16" y2="12"></line>
+                                                        <line x1="16" y1="12" x2="22" y2="18"></line>
+                                                    </g>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                    <div class="row">
+                        <div class="pricing-thumb">
+                            <div class="d-flex justify-content-center">
+                                <h6>No pending Events</h6>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

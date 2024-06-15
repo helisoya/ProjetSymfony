@@ -3,17 +3,37 @@
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
-    <h1>Inscription</h1>
+    <main>
+        <video autoplay="" loop="" muted="" class="custom-video position-fixed" poster="">
+            <source src="{{ asset('build/video/pexels-2022395.mp4') }}" type="video/mp4">
 
-    {{ form_errors(registrationForm) }}
+            Your browser does not support the video tag.
+        </video>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.nom) }}
-        {{ form_row(registrationForm.prenom) }}
-        {{ form_row(registrationForm.password) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+        <section class="ticket-section section-padding">
+            <div class="section-overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-10 mx-auto">
+                        <div class="custom-form ticket-form mb-5 mb-lg-0">
+                            <h2 class="text-center mb-4">LogIn !</h2>
+                            <div class="ticket-form-body">
+                                {{ form_errors(registrationForm) }}
 
-        <button type="submit" class="btn">S'inscrire</button>
-    {{ form_end(registrationForm) }}
+                                {{ form_start(registrationForm) }}
+                                    {{ form_row(registrationForm.email) }}
+                                    {{ form_row(registrationForm.nom) }}
+                                    {{ form_row(registrationForm.prenom) }}
+                                    {{ form_row(registrationForm.password) }}
+                                    {{ form_row(registrationForm.agreeTerms) }}
+
+                                    <button type="submit" class="btn">S'inscrire</button>
+                                {{ form_end(registrationForm) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}

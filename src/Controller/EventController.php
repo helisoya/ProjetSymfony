@@ -125,7 +125,7 @@ class EventController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_event_show', methods: ['GET'])]
+    #[Route('/{id}/show', name: 'app_event_show', methods: ['GET'])]
     public function show(Event $event): Response
     {
         $userInscrit = false;
@@ -224,7 +224,7 @@ class EventController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_event_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_event_delete', methods: ['POST'])]
     public function delete(Request $request, Event $event): Response
     {
         if (!$this->authorizationChecker->isGranted('EVENT_DELETE', $event)) {
