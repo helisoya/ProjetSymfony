@@ -1,11 +1,4 @@
-import './bootstrap.js';
-import './js/bootstrap.min';
-import './js/click-scroll';
-import './js/custom';
-import './js/jquery.min';
-import './js/jquery.sticky';
-
-const jQuery = require('jquery')
+const $ = jQuery = require('jquery')
 window.jQuery = jQuery
 window.$ = jQuery;
 

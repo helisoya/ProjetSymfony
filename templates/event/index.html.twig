@@ -5,23 +5,39 @@
 {% block body %}
     <h1>Event index</h1>
     <form>
-        <label>Title :
-            <input id="search-title" type="text">
+        <label for="search-title"> Title :
+            <input id="search-title" type="text" name="title" value="{{ filters['title'] ?? '' }}">
         </label>
-        <label>Description
-            <input id="search-description" type="text">
+        <label for="search-description"> Description :
+            <input id="search-description" type="text" name="description" value="{{ filters['description'] ?? '' }}">
         </label>
-        <label> creator :
-            <select id="search-creator">
-                <option value="null" selected>Chose a creator</option>
+        <label for="search-minStartDate"> Min start date :
+            <input id="search-minStartDate" type="date" name="minStartDate" value="{{ filters['minStartDate'] ?? '' }}">
+        </label>
+        <label for="search-maxStartDate"> Max start date :
+            <input id="search-maxStartDate" type="date" name="maxStartDate" value="{{ filters['maxStartDate'] ?? '' }}">
+        </label>
+        <label for="search-maxParticipants"> Max Participants :
+            <input id="search-maxParticipants" type="text" name="maxParticipants" value="{{ filters['maxParticipants'] ?? '' }}">
+        </label>
+        <label for="search-isPublic"> Public :
+            <select id="search-isPublic" name="isPublic">
+                <option value="" {{ filters['isPublic'] ?: 'selected' }}>Select a value</option>
+                <option value="Yes" {{ filters['isPublic'] is same as 'Yes' ? 'selected' }}>Yes</option>
+                <option value="No" {{ filters['isPublic'] is same as 'No' ? 'selected' }}>No</option>
+            </select>
+        </label>
+        <label for="search-creator"> Creator :
+            <select id="search-creator" name="creator">
+                <option value="" {{ filters['creator'] ?: 'selected' }}>Select a creator</option>
                 {% for creator in creators %}
-                    <option value="{{ creator.id }}">{{ creator.nom }} {{ creator.prenom }}</option>
+                    <option value="{{ creator.id }}" {{ filters['creator'] != creator.id ?: 'selected' }}>{{ creator.nom }} {{ creator.prenom }}</option>
                 {% endfor %}
             </select>
         </label>
-        <button type="button" id="button-submit" class="btn">search</button>
-        <button type="reset" class="btn">reset</button>
+        <button type="submit" id="button-submit" class="btn">search</button>
     </form>
+    <a href="{{ path('app_event_index') }}"><button type="button" class="btn">reset</button></a>
 
     <table class="table">
         <thead>
@@ -62,30 +78,4 @@
     </table>
 
     <a href="{{ path('app_event_new') }}">Create new</a>
-{% endblock %}
-{% block javascripts %}
-    <script>
-        $(document).ready(()=> {
-            $('button-submit').onclick((e) => {
-                e.preventDefault()
-                $.ajax({
-                    url: "/search",
-                    type: "get",
-                    data: {
-                        title: $('search-title').getValue(),
-                        description: $('search-description').getValue(),
-                        creatorId: $('search-creator').getValue(),
-                    },
-                    success: function (response) {
-                        console.log(response)
-                    },
-                    error: function (xhr) {
-                        console.log(xhr)
-                    }
-                });
-                document.getElementById('search-title')
-
-            });
-        });
-    </script>
 {% endblock %}

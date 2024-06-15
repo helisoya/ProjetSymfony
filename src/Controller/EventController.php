@@ -2,85 +2,104 @@
 
 namespace App\Controller;
 
-use App\Entity\Event;
+use DateTime;
 use App\Entity\User;
+use App\Entity\Event;
 use App\Form\EventType;
+use App\Service\EmailManager;
+use Exception;
+use Symfony\Component\Mime\Email;
 use App\Service\EventPlaceManager;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\EmailManager;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 #[Route('/event')]
 class EventController extends AbstractController
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface        $entityManager,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
-        private readonly  EventPlaceManager $eventPlaceManager,
-        private readonly EmailManager $emailManager
+        private readonly EventPlaceManager             $eventPlaceManager,
+        private readonly EmailManager                  $emailManager
     )
     {
     }
 
+    /**
+     * @throws Exception
+     */
     #[Route('/', name: 'app_event_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $events = $this->entityManager->getRepository(Event::class)->findAll();
+        $filters = [
+            'title' => !empty($request->get('title')) ? $request->get('title') : null,
+            'description' => !empty($request->get('description')) ? $request->get('description') : null,
+            'minStartDate' => !empty($request->get('minStartDate')) ? $request->get('minStartDate') : null,
+            'maxStartDate' => !empty($request->get('maxStartDate')) ? $request->get('maxStartDate') : null,
+            'creator' => !empty($request->get('creator')) ? $request->get('creator') : null,
+            'maxParticipants' => !empty($request->get('maxParticipants')) ? $request->get('maxParticipants') : null,
+            'isPublic' => !empty($request->get('isPublic')) ? $request->get('isPublic') : null,
+        ];
+
+        $events = $this->entityManager->getRepository(Event::class)->createQueryBuilder('e');
+
+        if ($filters['title']) {
+            $title = $filters['title'];
+            $events->where('e.title like :searchTitle')
+                ->setParameter('searchTitle', "%$title%");
+        }
+
+        if ($filters['description']) {
+            $description = $filters['description'];
+            $events->andWhere('e.description like :searchDescription')
+                ->setParameter('searchDescription', "%$description%");
+        }
+
+        if ($filters['minStartDate'] && $filters['maxStartDate']) {
+
+            $minDate = $this->createDate($filters['minStartDate']);
+            $maxDate = $this->createDate($filters['maxStartDate']);
+
+            if ($minDate && $maxDate) {
+                $events->andWhere('e.startDate between :from and :to')
+                    ->setParameter('from', $minDate->format('Y-m-d') . ' 00:00:00')
+                    ->setParameter('to', $maxDate->format('Y-m-d') . ' 23:59:59');
+            }
+        }
+
+        if ($filters['creator']) {
+            $events->andWhere('e.creator = :creator')
+                ->setParameter('creator', $filters['creator']);
+        }
+
+        if ($filters['maxParticipants']) {
+            $events->andWhere('e.maxParticipants = :maxParticipants')
+                ->setParameter('maxParticipants', $filters['maxParticipants']);
+        }
+
+        if ($filters['isPublic']) {
+            $isPublic = $filters['isPublic'] === 'Yes';
+            $events->andWhere('e.isPublic = :isPublic')
+                ->setParameter('isPublic', $isPublic);
+        }
+
+        $events = $events->getQuery()->getResult();
         $creators = [];
 
-        foreach ($events as $event){
+        foreach ($this->entityManager->getRepository(Event::class)->findAll() as $event) {
             if (!in_array($event->getCreator(), $creators)) $creators[] = $event->getCreator();
         }
 
         return $this->render('event/index.html.twig', [
             'events' => $events,
+            'filters' => $filters,
             'creators' => $creators
-        ]);
-    }
-
-    #[Route('/search', name: 'app_event_search', methods: ['GET'])]
-    public function search(Request $request):JsonResponse
-    {
-        $formData = $request->request;
-        $events = $this->entityManager->getRepository(Event::class)->createQueryBuilder('e')
-            ->select()
-            ->where('e.title like :searchTitle')
-            ->andWhere('e.description like :searchDescription')
-            ->setParameter('searchTitle', '%' . $formData['title'] . '%')
-            ->setParameter('searchDescription', '%' . $formData['title'] . '%');
-
-        if ($formData['minStartDate'] && $formData['maxStartDate']) {
-            $events->andWhere('e.startDate between :from and :to')
-                ->setParameter('from', $formData['minStartDate']->format('d/m/y') . ' 00:00:00')
-                ->setParameter('to', $formData['maxStartDate']->format('d/m/y') . ' 23:59:59');
-        }
-
-        if ($formData['creator']){
-            $events->andWhere('e.creator = :creator')
-                ->setParameter('creator', $formData['creator']);
-        }
-
-        if ($formData['maxParticipants']){
-            $events->andWhere('e.max_participants = :maxParticipants')
-                ->setParameter('maxParticipants', $formData['maxParticipants']);
-        }
-
-        if ($formData['isPublic']) {
-            $events->andWhere('e.is_public = :isPublic')
-                ->setParameter('isPublic', $formData['isPublic']);
-        }
-
-        $events = $events->getQuery()->getResult();
-        return new JsonResponse([
-            'events' => $events
         ]);
     }
 
@@ -113,7 +132,7 @@ class EventController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if($user !== null){
+        if ($user !== null) {
 
             foreach ($event->getParticipants() as $participant) {
                 if ($participant === $user) {
@@ -125,8 +144,8 @@ class EventController extends AbstractController
 
         return $this->render('event/show.html.twig', [
             'event' => $event,
-            'userInscrit'=> $userInscrit,
-            'remainingSeats'=>$this->eventPlaceManager->computeRemainingSeats($event)
+            'userInscrit' => $userInscrit,
+            'remainingSeats' => $this->eventPlaceManager->computeRemainingSeats($event)
         ]);
     }
 
@@ -139,7 +158,7 @@ class EventController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if($user !== null && $this->eventPlaceManager->computeRemainingSeats($event) > 0){
+        if ($user !== null && $this->eventPlaceManager->computeRemainingSeats($event) > 0) {
             $event->addParticipant($user);
             $this->entityManager->persist($event);
             $this->entityManager->flush();
@@ -148,12 +167,12 @@ class EventController extends AbstractController
                 ->from('contact.squadron70@gmail.com')
                 ->to($user->getEmail())
                 ->subject('Inscription à la conférence')
-                ->text('Bonjour, vous êtes inscrit à la conférence : ' .$event->getTitle() . ". Merci de faire confiance à Pierre Softwares.");
+                ->text('Bonjour, vous êtes inscrit à la conférence : ' . $event->getTitle() . ". Merci de faire confiance à Pierre Softwares.");
 
             $this->emailManager->sendMail($email);
         }
 
-        return $this->redirectToRoute('app_event_show',["id"=>$event->getId()],Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_event_show', ["id" => $event->getId()], Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -165,7 +184,7 @@ class EventController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if($user !== null){
+        if ($user !== null) {
             $event->removeParticipant($user);
             $this->entityManager->persist($event);
             $this->entityManager->flush();
@@ -175,12 +194,12 @@ class EventController extends AbstractController
                 ->from('contact.squadron70@gmail.com')
                 ->to($user->getEmail())
                 ->subject('Desinscription à la conférence')
-                ->text('Bonjour, vous n\'êtes plus inscrit à la conférence : ' .$event->getTitle() . ". Merci de faire confiance à Pierre Softwares.");
+                ->text('Bonjour, vous n\'êtes plus inscrit à la conférence : ' . $event->getTitle() . ". Merci de faire confiance à Pierre Softwares.");
 
             $this->emailManager->sendMail($email);
         }
 
-        return $this->redirectToRoute('app_event_show',["id"=>$event->getId()],Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_event_show', ["id" => $event->getId()], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/edit', name: 'app_event_edit', methods: ['GET', 'POST'])]
@@ -212,11 +231,34 @@ class EventController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->getPayload()->get('_token'))) {
             $this->entityManager->remove($event);
             $this->entityManager->flush();
         }
 
         return $this->redirectToRoute('app_event_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    public function isValidDate($date, $format = 'Y-m-d'): bool
+    {
+        if (is_null($date)) {
+            return false;
+        }
+
+        $dateTime = DateTime::createFromFormat($format, $date);
+        return $dateTime && $dateTime->format($format) === $date;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function createDate(string $dateString): ?DateTime
+    {
+        $isValid = $this->isValidDate($dateString);
+
+        if ($isValid){
+            return new DateTime($dateString);
+        }
+        return null;
     }
 }
