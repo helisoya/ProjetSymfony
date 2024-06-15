@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use DateTime;
+use Exception;
 use App\Entity\User;
 use App\Entity\Event;
 use App\Form\EventType;
 use App\Service\EmailManager;
-use Exception;
 use Symfony\Component\Mime\Email;
 use App\Service\EventPlaceManager;
 use Doctrine\ORM\EntityManagerInterface;
