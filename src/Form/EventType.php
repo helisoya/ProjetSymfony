@@ -3,12 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Event;
-use App\Entity\User;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Validator\DateConstraint;
+use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class EventType extends AbstractType
 {
@@ -16,15 +15,19 @@ class EventType extends AbstractType
     {
         $builder
             ->add('title')
-            ->add('description')
+            ->add('description', null, [
+                'required' => true
+            ])
             ->add('startDate', null, [
                 'widget' => 'single_text',
-                'constraints'=>[
-                    new GreaterThan('today')
-                ]
+                'attr' => [
+                    'min' => (new DateTime('+7day'))->format('Y-m-d h:i')
+                ],
             ])
             ->add('maxParticipants')
-            ->add('isPublic')
+            ->add('isPublic', null, [
+                'label' => 'Event public'
+            ])
         ;
     }
 
@@ -32,6 +35,9 @@ class EventType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Event::class,
+            'constraints' => [
+                new DateConstraint('startDate')
+            ]
         ]);
     }
 }

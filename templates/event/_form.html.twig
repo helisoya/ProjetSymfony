@@ -1,4 +1,10 @@
+{% from 'event/macro.html.twig' import buildInputCheckbox %}
+
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.startDate) }}
+    {{ form_row(form.maxParticipants) }}
+    {{ buildInputCheckbox(form.isPublic) }}
     <button class="btn custom-btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

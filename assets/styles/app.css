@@ -13,3 +13,8 @@ body {
 .ticket-section {
     background-image: none;
 }
+
+.required:after {
+    color: red;
+    content: '*';
+}

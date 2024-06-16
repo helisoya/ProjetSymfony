@@ -19,21 +19,27 @@ class EventControllerTest extends WebTestCase
     private User $user;
     private Event $fixture;
 
+    private DateTime $dateTime;
+
     protected function setUp(): void
     {
         $this->client = static::createClient();
+
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->repository = $this->manager->getRepository(Event::class);
+
         $this->user = $this->manager->getRepository(User::class)->findAll()[0];
         $this->client->loginUser($this->user);
+
         foreach ($this->repository->findAll() as $object) {
             $this->manager->remove($object);
         }
+        $this->dateTime = new DateTime('+8day');
 
         $this->fixture = new Event();
         $this->fixture->setTitle('My Title');
         $this->fixture->setDescription('My Title');
-        $this->fixture->setStartDate(new DateTime('2024-06-05T19:45'));
+        $this->fixture->setStartDate($this->dateTime);
         $this->fixture->setMaxParticipants(85);
         $this->fixture->setIsPublic('My Title');
         $this->fixture->setCreator($this->user);
@@ -61,7 +67,7 @@ class EventControllerTest extends WebTestCase
         $TestEvent = new Event();
         $TestEvent->setTitle('Testing');
         $TestEvent->setDescription('Testing');
-        $TestEvent->setStartDate(new DateTime('2024-06-05T19:45'));
+        $TestEvent->setStartDate($this->dateTime);
         $TestEvent->setMaxParticipants(50);
         $TestEvent->setIsPublic(true);
         $TestEvent->setCreator($this->user);
@@ -69,11 +75,9 @@ class EventControllerTest extends WebTestCase
         $this->client->submitForm('Save', [
             'event[title]' => 'Testing',
             'event[description]' => 'Testing',
-            'event[startDate]' => '2024-06-05T19:45',
+            'event[startDate]' => $this->dateTime->format('Y-m-d H:i'),
             'event[maxParticipants]' => '50',
-            'event[isPublic]' => '1',
-            'event[participants]' => [],
-            'event[creator]' => $this->user->getId(),
+            'event[isPublic]' => '1'
         ]);
 
         self::assertResponseRedirects($this->path);
@@ -91,18 +95,21 @@ class EventControllerTest extends WebTestCase
         $this->manager->persist($this->fixture);
         $this->manager->flush();
 
-        $this->client->request('GET', sprintf('%s%s', $this->path, $this->fixture->getId()));
+        $this->client->request('GET', sprintf('%s%s/show', $this->path, $this->fixture->getId()));
 
         self::assertResponseStatusCodeSame(200);
 
         // Use assertions to check that the properties are properly displayed.
-        self::assertSelectorTextSame('tr td', $this->fixture->getId());
-        self::assertSelectorTextSame('tr:nth-child(2) td', $this->fixture->getTitle());
-        self::assertSelectorTextSame('tr:nth-child(3) td', $this->fixture->getDescription());
-        self::assertSelectorTextSame('tr:nth-child(4) td', $this->fixture->getStartDate()->format('Y-m-d H:i:s'));
-        self::assertSelectorTextSame('tr:nth-child(5) td', $this->fixture->getParticipants()->count() . ' / ' . $this->fixture->getMaxParticipants());
-        self::assertSelectorTextSame('tr:nth-child(6) td', $this->fixture->isPublic() ? 'Yes' : 'No');
-        self::assertSelectorTextSame('tr:nth-child(7) td', $this->fixture->getCreator()->getNom() . ' ' . $this->fixture->getCreator()->getPrenom());
+        self::assertSelectorTextSame('h2.text-center.mb-4', $this->fixture->getTitle());
+        self::assertSelectorTextSame('div.custom-form.ticket-form.mb-5.mb-lg-0 p', $this->fixture->getDescription());
+        self::assertSelectorTextSame('.pricing-list-item:nth-child(1)', 'The ' .
+            $this->fixture->getStartDate()->format('Y/m/d') .
+            ' at ' .
+            $this->fixture->getStartDate()->format('H:i:s')
+        );
+        self::assertSelectorTextSame('.pricing-list-item:nth-child(2)', $this->fixture->getParticipants()->count() . '/' . $this->fixture->getMaxParticipants() . ' participants');
+        self::assertSelectorTextSame('.pricing-list-item:nth-child(3)', $this->fixture->isPublic() ? 'Public' : 'Private');
+        self::assertSelectorTextSame('.pricing-list-item:nth-child(4)', 'By ' . $this->fixture->getCreator()->getNom() . ' ' . $this->fixture->getCreator()->getPrenom());
 
     }
 
@@ -117,11 +124,9 @@ class EventControllerTest extends WebTestCase
         $this->client->submitForm('Update', [
             'event[title]' => 'Mont Blanc',
             'event[description]' => 'Testing',
-            'event[startDate]' => '2024-06-05T20:45',
+            'event[startDate]' => $this->dateTime->format('Y-m-d H:i'),
             'event[maxParticipants]' => '50',
             'event[isPublic]' => '1',
-            'event[participants]' => [],
-            'event[creator]' => $this->user->getId(),
         ]);
 
         self::assertResponseRedirects('/event/');
@@ -130,7 +135,7 @@ class EventControllerTest extends WebTestCase
 
         self::assertSame('Mont Blanc', $fixture[0]->getTitle());
         self::assertSame('Testing', $fixture[0]->getDescription());
-        self::assertSame((new DateTime('2024-06-05T20:45'))->format('Y/M/D h:i'), $fixture[0]->getStartDate()->format('Y/M/D h:i'));
+        self::assertSame($this->dateTime->format('Y/M/D h:i'), $fixture[0]->getStartDate()->format('Y/M/D h:i'));
         self::assertSame(50, $fixture[0]->getMaxParticipants());
         self::assertSame(true, $fixture[0]->isPublic());
         self::assertSame(0, $fixture[0]->getParticipants()->count());
@@ -143,7 +148,7 @@ class EventControllerTest extends WebTestCase
         $this->manager->persist($this->fixture);
         $this->manager->flush();
 
-        $this->client->request('GET', sprintf('%s%s', $this->path, $this->fixture->getId()));
+        $this->client->request('GET', sprintf('%s%s/show', $this->path, $this->fixture->getId()));
         $this->client->submitForm('Delete');
 
         self::assertResponseRedirects('/event/');

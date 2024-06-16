@@ -1,0 +1,36 @@
+{% macro buildInputCheckbox(field, column) %}
+    {% set invalid = field.vars.errors|length > 0 %}
+
+    <div id="{{ field.vars.id }}" class="mb-4">
+        <div class="form-check-inline">
+            <input
+                    type="checkbox"
+                    id="{{ field.vars.id }}"
+                    name="{{ field.vars.full_name }}"
+                    class="form-check-input {% if invalid %}is-invalid{% endif %}"
+                    value="{{ field.vars.data }}"
+                    {% if field.vars.required %}required="required"{% endif %}
+            {% for index, attr in field.vars.attr %}
+                {{ index }}="{{ attr }}"
+            {% endfor %}
+            {% if field.vars.data == true %}checked="checked"{% endif %}
+            >
+            <label class="form-check-label {% if field.vars.required %}required{% endif %} radio" for="{{ field.vars.id }}">
+                {{ field.vars.label }}
+            </label>
+            {% if column is not null %}
+                <div class="form-text help-text">
+                    {{ _self.getDynamicColumnValue(choice.data, column) }}
+                </div>
+            {% endif %}
+        </div>
+        {{ form_errors(field) }}
+    </div>
+    {% do field.setRendered() %}
+{% endmacro %}
+
+{% macro getDynamicColumnValue(entity, column) %}
+    {% if attribute(entity, column) is defined %}
+        {{ attribute(entity, column) }}
+    {% endif %}
+{% endmacro %}
